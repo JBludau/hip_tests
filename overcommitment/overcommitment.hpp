@@ -1,13 +1,20 @@
 #ifndef OVERCOMMITMENT_HPP
 #define OVERCOMMITMENT_HPP
 
+#include <cstdlib>
+
 #include <safe_call.hpp>
 #include <getDeviceProperties.hpp>
 
 TEST(hip, Overcommitment) {
   auto devProp = getDeviceProperties(0);
-  int* ptr     = nullptr;  // as we might call free on it without allocating
-                           // anything
+  int* ptr     = nullptr;  // as we might call free on it without
+                           // allocating anything
+  ASSERT_NO_THROW(
+      ptr = static_cast<int*>(std::malloc(10 * devProp.totalGlobalMem)));
+  std::free(static_cast<void*>(ptr));
+  ptr = nullptr;
+
   ASSERT_NO_THROW(
       HIP_SAFE_CALL(hipHostMalloc(&ptr, 1.2 * devProp.totalGlobalMem)));
   HIP_SAFE_CALL(hipFree(ptr));
