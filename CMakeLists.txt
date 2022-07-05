@@ -17,6 +17,7 @@ add_executable( hip_tests main.cpp )
 add_dependencies(hip_tests gtest)
 target_include_directories(hip_tests PUBLIC ${PROJECT_SOURCE_DIR}/common)
 target_include_directories(hip_tests PUBLIC ${install_dir}/include)
+target_compile_options(hip_tests PUBLIC -O0 -Wall -Wextra -Wpedantic -Werror)
 target_link_libraries(hip_tests ${install_dir}/lib/libgtest.a)
 target_link_libraries(hip_tests ${install_dir}/lib/libgtest_main.a)
 
