@@ -44,11 +44,21 @@ TEST(hip, overcommitment_after_inital_alloc) {
   HIP_SAFE_CALL(hipFree(host_pinned_ptr));
 
   int* managed_ptr = nullptr;
-  ASSERT_NO_THROW(
-      HIP_SAFE_CALL(hipHostMalloc(&managed_ptr, 0.8 * devProp.totalGlobalMem)));
+  ASSERT_NO_THROW(HIP_SAFE_CALL(
+      hipMallocManaged(&managed_ptr, 0.8 * devProp.totalGlobalMem)));
   HIP_SAFE_CALL(hipFree(managed_ptr));
 
   HIP_SAFE_CALL(hipFree(pre_load_ptr));
+}
+
+TEST(hip, repeated_alloc_managed) {
+  auto devProp = getDeviceProperties(0);
+  int* managed_ptr[10];
+  for (unsigned i = 0; i < 10; ++i)
+    ASSERT_NO_THROW(HIP_SAFE_CALL(
+        hipMallocManaged(&managed_ptr[i], 0.8 * devProp.totalGlobalMem)));
+
+  for (unsigned i = 0; i < 10; ++i) HIP_SAFE_CALL(hipFree(managed_ptr[i]));
 }
 
 #endif
