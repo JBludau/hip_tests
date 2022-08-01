@@ -61,4 +61,13 @@ TEST(hip, repeated_alloc_managed) {
   for (unsigned i = 0; i < 10; ++i) HIP_SAFE_CALL(hipFree(managed_ptr[i]));
 }
 
+TEST(hip, repeated_alloc_device) {
+  auto devProp = getDeviceProperties(0);
+  int* device_ptr[10];
+  for (unsigned i = 0; i < 10; ++i)
+    ASSERT_NO_THROW(
+        HIP_SAFE_CALL(hipMalloc(&device_ptr[i], 0.8 * devProp.totalGlobalMem)));
+
+  for (unsigned i = 0; i < 10; ++i) HIP_SAFE_CALL(hipFree(device_ptr[i]));
+}
 #endif
